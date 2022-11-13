@@ -1,12 +1,12 @@
 <!--
  * @Author: robert zhang <robertzhangwenjie@gmail.com>
  * @Date: 2022-11-12 12:05:59
- * @LastEditTime: 2022-11-13 10:57:58
+ * @LastEditTime: 2022-11-13 11:03:50
  * @LastEditors: robert zhang
  * @Description: 
 -->
 # Gitbook2Pdf 
-## The project had solved the image display problem
+## This project has solved the image display problem
 
 ## Usage 
 ### With Docker
@@ -21,4 +21,4 @@ python gitbook.py <url>
 ```
 
 ## Original Project
-![gitbook2pdf](https://github.com/fuergaosi233/gitbook2pdf)#
+[original project url](https://github.com/fuergaosi233/gitbook2pdf)
