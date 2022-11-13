@@ -139,3 +139,6 @@ dmypy.json
 .pytype/
 .idea
 # End of https://www.toptal.com/developers/gitignore/api/python
+
+# macos
+.DS_Store

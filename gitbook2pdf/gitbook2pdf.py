@@ -1,3 +1,10 @@
+'''
+Author: robert zhang <robertzhangwenjie@gmail.com>
+Date: 2022-11-12 12:05:59
+LastEditTime: 2022-11-13 09:55:57
+LastEditors: robert zhang
+Description: 
+'''
 import html
 import requests
 import asyncio
@@ -87,11 +94,20 @@ class HtmlGenerator():
 
 
 class ChapterParser():
-    def __init__(self, original,index_title, baselevel=0):
+    '''
+    description: 解析子章节，也就是class为chapter的html内容
+    param {*} self
+    param {*} original 原始的text
+    param {*} index_title 标题
+    param {*} baselevel 章节对应的级别，例如1.1 或1.1.1这种
+    return {*}
+    '''    
+    def __init__(self, base_url,original,index_title, baselevel=0):
         self.heads = {'h1': 1, 'h2': 2, 'h3': 3, 'h4': 4, 'h5': 5, 'h6': 6}
         self.original = original
         self.baselevel = baselevel
         self.index_title = index_title
+        self.base_url = base_url
 
     def parser(self):
         tree = ET.HTML(self.original)
@@ -101,8 +117,20 @@ class ChapterParser():
             context = tree.xpath('//section[@class="normal"]')[0]
         if context.find('footer'):
             context.remove(context.find('footer'))
+        # 解析
+        context = self.parse_img(context)
+        # 解析head
         context = self.parsehead(context)
+        # 返回html格式的内容
         return html.unescape(ET.tostring(context,encoding='utf-8').decode())
+
+    def parse_img(self,context):
+        el_imgs = context.xpath('//img')
+        for el_img in el_imgs:
+            old_src = el_img.get('src')
+            new_src = urljoin(self.base_url,old_src)
+            el_img.set('src',new_src)
+        return context
 
     def parsehead(self, context):
         def level(num):
@@ -124,6 +152,10 @@ class IndexParser():
 
     @classmethod
     def titleparse(cls, li):
+        '''
+        description: 从li标签中提取出text作为title
+        return {title}
+        '''        
         children = li.getchildren()
         if len(children) != 0:
             firstchildren = children[0]
@@ -134,12 +166,21 @@ class IndexParser():
         return title
 
     def parse(self):
+        '''
+        description: 返回一个list，list中的元素为一个字典
+        return {list[{
+                    'url': ,
+                    'level': ,
+                    'title': 
+                }]}
+        '''        
         found_urls = []
         content_urls = []
         for li in self.lis:
             element_class = li.attrib.get('class')
             if not element_class:
                 continue
+            # 解析章节中的title和level
             if 'header' in element_class:
                 title = self.titleparse(li)
                 data_level = li.attrib.get('data-level')
@@ -154,8 +195,11 @@ class IndexParser():
                 level = len(data_level.split('.'))
                 if 'data-path' in li.attrib:
                     data_path = li.attrib.get('data-path')
+                    # url 为子章节的访问地址
                     url = urljoin(self.start_url, data_path)
+                    # 解析子章节中的title
                     title = self.titleparse(li)
+                    # 将url、level、title 放入content_urls中
                     if url not in found_urls:
                         content_urls.append(
                             {
@@ -193,6 +237,7 @@ class Gitbook2PDF():
 
     def run(self):
         content_urls = self.collect_urls_and_metadata(self.base_url)
+        # 初始化一个长度为len(content_urls)的list，使用""填充长度
         self.content_list = ["" for _ in range(len(content_urls))]
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.crawl_main_content(content_urls))
@@ -213,6 +258,7 @@ class Gitbook2PDF():
     async def crawl_main_content(self, content_urls):
         tasks = []
         for index, urlobj in enumerate(content_urls):
+            # 当urljob中的url不为空时，则表示为子章节，则开始爬取内容
             if urlobj['url']:
                 tasks.append(self.gettext(index, urlobj['url'], urlobj['level'],urlobj['title']))
             else:
@@ -228,6 +274,7 @@ class Gitbook2PDF():
 
     async def gettext(self, index, url, level, title):
         '''
+        description: 爬取url中的内容
         return path's html
         '''
 
@@ -238,7 +285,7 @@ class Gitbook2PDF():
             print("retrying : ", url)
             metatext = await request(url, self.headers)
         try:
-            text = ChapterParser(metatext, title, level, ).parser()
+            text = ChapterParser(url,metatext, title, level ).parser()
             print("done : ", url)
             self.content_list[index] = text
         except IndexError:
@@ -256,6 +303,14 @@ class Gitbook2PDF():
         print('Generated')
 
     def collect_urls_and_metadata(self, start_url):
+        '''
+        description: 获取页面中所有的章节url
+        return {list[{
+            url,
+            level,
+            title
+        }]}
+        '''
         response = requests.get(start_url, headers=self.headers)
         self.base_url = response.url
         start_url = response.url

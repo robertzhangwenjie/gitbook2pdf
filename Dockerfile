@@ -1,4 +1,4 @@
-FROM python:3.8.12-bullseye
+FROM python:3.9.7-bullseye
 
 RUN echo """deb http://mirrors.ustc.edu.cn/debian stable main contrib non-free \
 deb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free \
@@ -13,13 +13,13 @@ ENV LANG=zh_CN.UTF-8 LANGUAGE=zh_CN.UTF-8
 RUN apt-get install -y locales \
     && dpkg-reconfigure --frontend=noninteractive locales 
 
-RUN git clone https://github.com/is2ac-zhao/gitbook2pdf /app
+COPY . /app
 
 WORKDIR /app
 
 RUN python -m pip install --upgrade pip \
     && python -m pip install -r requirements.txt
 
-CMD ["python"]
+ENTRYPOINT [ "python","gitbook.py" ]
 
 
