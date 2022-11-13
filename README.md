@@ -1,12 +1,17 @@
 <!--
  * @Author: robert zhang <robertzhangwenjie@gmail.com>
  * @Date: 2022-11-12 12:05:59
- * @LastEditTime: 2022-11-13 11:03:50
+ * @LastEditTime: 2022-11-13 12:19:37
  * @LastEditors: robert zhang
  * @Description: 
 -->
 # Gitbook2Pdf 
-## This project has solved the image display problem
+## This project has solved the image display problem   
+- 原因分析  
+  当页面图片的地址为相对地址时，因为拼接的baseUrl为传入的url，因此当gitbook存在多个子章节时，子章节中的img url拼接错误  
+- 解决方案  
+  再爬取每个章节的内容后，将内容中的所有img标签中的属性scr进行替换，使用urllib.parse.urljoin替换为当前章节的所有img属性src的值
+
 
 ## Usage 
 ### With Docker
