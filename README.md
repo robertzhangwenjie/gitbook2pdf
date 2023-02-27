@@ -1,7 +1,7 @@
 <!--
  * @Author: robert zhang <robertzhangwenjie@gmail.com>
  * @Date: 2022-11-12 12:05:59
- * @LastEditTime: 2022-11-13 12:19:37
+ * @LastEditTime: 2023-02-27 22:05:44
  * @LastEditors: robert zhang
  * @Description: 
 -->
@@ -16,13 +16,13 @@
 ## Usage 
 ### With Docker
 ```shell
-docker run -it -v `pwd`/output:/app/output zhangwenjie/gitbook2pdf <your url>
+docker run -it -v `pwd`/output:/app/output zhangwenjie/gitbook2pdf <your url> <filename.pdf>
 ```
 
 ### With python
 ```shell
 pip install -r requirements.txt
-python gitbook.py <url>
+python gitbook.py <url> <filename.pdf>
 ```
 
 ## Original Project
