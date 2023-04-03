@@ -1,4 +1,4 @@
-FROM python:3.9.7-slim-bullseye
+FROM python:3.9.7-bullseye
 
 RUN echo """deb http://mirrors.ustc.edu.cn/debian stable main contrib non-free \
 deb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free \
