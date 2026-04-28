@@ -319,7 +319,7 @@ class Gitbook2PDF():
 
         # If the output file name is not provided, grab the html title as the file name.
         if not self.fname:
-           #  title_ele = soup.find('title')
+            title_ele = soup.find('title')
             if title_ele:
                 title = title_ele.text
                 if '·' in title:
@@ -341,7 +341,7 @@ class Gitbook2PDF():
             )
 
         # get author meta
-        # author_meta = soup.find('meta', {'name': 'author'})
+        author_meta = soup.find('meta', {'name': 'author'})
         if author_meta:
             author = author_meta.attrs['content']
         else:
