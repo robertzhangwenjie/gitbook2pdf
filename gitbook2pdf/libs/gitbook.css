@@ -966,3 +966,18 @@ h1 + h1 {
   page-break-before: always;
   break-before: page;
 }
+
+/* Watermark: fixed position so it repeats on every PDF page */
+body::after {
+  content: "robert";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  font-size: 80px;
+  font-weight: bold;
+  color: rgba(180, 180, 180, 0.25);
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+}
